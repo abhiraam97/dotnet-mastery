@@ -45,3 +45,12 @@ contrast is *why generics exist*: type safety AND no boxing. See rung 05.
 
 _(Ram: from memory, what exactly does the runtime do on `object o = 42;`, and
 why does `ArrayList.Add(5)` box but `List<int>.Add(5)` not?)_
+
+because the ArrayList.Add(5) does not have a specific type and hence it just puts everything in a heap which does boxing with a pointer where as the latter just stacks in a collection.
+
+### Review corrections
+
+- Right that `ArrayList.Add(object)` boxes. But "the latter just stacks in a
+  collection" is wrong: `List<int>`'s backing array is on the **heap** too. The
+  ints sit **inline** in that array with **no box**. The real contrast is
+  boxed-on-heap vs inline-in-a-heap-array, not heap vs stack.

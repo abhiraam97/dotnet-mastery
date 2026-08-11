@@ -71,3 +71,12 @@ never gets collected. Fix: `-=` when done (or weak event patterns).
 
 _(Ram: from memory - why does the `for` loop print 3 3 3, and what is the one
 difference between an event and a public delegate field?)_
+
+Because the for loop uses the same shared variable not it's value as a snapshot.
+
+### Review corrections
+
+- First half correct and crisp. Missing second half: an **event** exposes only
+  `+=` / `-=` to outside code - it can't be invoked or overwritten from outside.
+  A public delegate field could be fired or nulled by anyone. That restriction
+  is the whole difference.

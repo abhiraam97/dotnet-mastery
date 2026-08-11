@@ -63,3 +63,13 @@ collection** (finalization queue), making GC work harder.
 
 _(Ram: from memory - why don't circular references leak in .NET, and why isn't
 the GC enough for a database connection?)_
+
+Because the objects are collected based on their root object tracing rather than individual counts.
+
+### Review corrections
+
+- First half correct (reachability tracing, not reference counts, so cycles
+  collect). Missing second half: the GC isn't enough for a DB connection because
+  GC timing is **non-deterministic** - the connection would stay open and locked
+  until some random future collection, starving the pool. `Dispose()` (via
+  `using`) releases it **the instant** you're done.

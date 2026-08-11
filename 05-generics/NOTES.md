@@ -67,3 +67,11 @@ Mnemonic: **out comes out (producer), in goes in (consumer).**
 _(Ram: from memory - how many native implementations for List<string>,
 List<Customer>, List<int>, List<long>? And why is IEnumerable covariant but
 List invariant?)_
+
+Because the IEnumerable is compatible with it's base type IEnumerable<object> which is only read only, where as List has a add feature which makes it invariant.
+
+### Review corrections
+
+- Variance reasoning correct. Missing the count: `List<string>`, `List<Customer>`,
+  `List<int>`, `List<long>` -> **3** implementations (one shared for the two
+  reference types, plus int, plus long).

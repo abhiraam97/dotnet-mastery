@@ -64,3 +64,13 @@ finish, but it's blocked. Deadlock. Fix: `await` instead of blocking, or
 
 _(Ram: from memory - what two things does the compiler turn your locals and your
 position into, and what decides which thread runs the code after an await?)_
+
+It turns out locals into fields and position into state machine with movenext() , it depends on the synchronizationContext and also the statemachine status
+
+### Review corrections
+
+- Locals -> fields and position -> `int state` (inside `MoveNext`): correct.
+  SynchronizationContext: correct. Drop "state machine status" - it's not a
+  factor. The thread is decided purely by whether a **SynchronizationContext**
+  was captured (UI -> resume there; console / ASP.NET Core -> thread-pool thread)
+  plus **ConfigureAwait(false)**.

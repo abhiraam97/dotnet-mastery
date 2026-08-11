@@ -47,3 +47,11 @@ is the doorway to boxing (rung 03).
 ## In my own words
 
 _(Ram: write the rule from memory and one sentence on why `b.X` became 500.)_
+
+because structs are value types and classes are reference types.
+
+### Review corrections
+
+- That's the **label**, not the mechanism. Tighter answer: passing `b` (a class)
+  copied the **reference**, so the method mutated the **same object** the caller
+  holds -> 500. In an interview, state the mechanism, not the category.

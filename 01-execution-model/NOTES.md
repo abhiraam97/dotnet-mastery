@@ -37,3 +37,12 @@ methods get re-optimized later."
 
 _(Ram: rewrite the chain above from memory, without looking. If any arrow is
 fuzzy, that's the bit to reread.)_
+
+C# code -> Roslyn Analyzer -> (JIT) in CLR Host -> CPU code
+
+### Review corrections
+
+- It's the Roslyn **compiler**, not an "analyzer" (analyzers are a separate
+  diagnostics feature - easy to mix up under pressure).
+- Missing box: Roslyn emits **IL/assembly**, and the JIT compiles *that*. Full
+  chain: C# -> Roslyn -> **IL/assembly** -> JIT (in the CLR) -> native -> CPU.
