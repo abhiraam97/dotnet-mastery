@@ -1,0 +1,28 @@
+### ShopSense - slice 1 smoke test
+### Run the app first (dotnet run), then send these.
+### VS Code REST Client / Rider can run these directly, or use the curl below.
+
+@base = http://localhost:5080
+
+### Ingest a fridge temperature reading
+POST {{base}}/readings
+Content-Type: application/json
+
+{
+  "sensorId": "fridge-1",
+  "metric": "temperature_c",
+  "value": 4.5
+}
+
+### Ingest a door reading (1 = open)
+POST {{base}}/readings
+Content-Type: application/json
+
+{
+  "sensorId": "front-door",
+  "metric": "door_open",
+  "value": 1
+}
+
+### List all readings (newest first)
+GET {{base}}/readings
