@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using ShopSystem.Data;
 using ShopSystem.Models;
+using ShopSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // automatically when the request ends (DbContext is IDisposable - rung 07).
 builder.Services.AddDbContext<ShopContext>(options =>
     options.UseSqlite("Data Source=shop.db"));
-
+builder.Services.AddHostedService<SensorSimulator>();
 var app = builder.Build();
 
 // --- Startup: make sure the SQLite file + schema exist ---
@@ -19,7 +21,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ShopContext>();
-    db.Database.EnsureCreated();
+    db.Database.Migrate();
 }
 
 // --- Endpoints ---
@@ -38,6 +40,25 @@ app.MapPost("/readings", async (Reading reading, ShopContext db) =>
 // GET /readings : list everything, newest first.
 app.MapGet("/readings", async (ShopContext db) =>
     await db.Readings
+            .OrderByDescending(r => r.TimestampUtc)
+            .ToListAsync());
+
+// GET /readings/latest : the newest reading for each sensor.
+// We group in MEMORY here (client-side): EF Core can't cleanly translate
+// "first row per group" to SQL, and would throw if forced. Fine at this scale.
+app.MapGet("/readings/latest", async (ShopContext db) =>
+{
+    var all = await db.Readings.ToListAsync();
+    return all.GroupBy(r => r.SensorId)
+              .Select(g => g.OrderByDescending(r => r.TimestampUtc).First())
+              .ToList();
+});
+
+// GET /readings/{sensorId}?since=<utc> : one sensor, optional time window.
+// This one DOES translate to SQL and runs inside the database.
+app.MapGet("/readings/{sensorId}", async (string sensorId, DateTime? since, ShopContext db) =>
+    await db.Readings
+            .Where(r => r.SensorId == sensorId && (since == null || r.TimestampUtc >= since))
             .OrderByDescending(r => r.TimestampUtc)
             .ToListAsync());
 
